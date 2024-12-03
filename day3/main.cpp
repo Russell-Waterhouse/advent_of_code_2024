@@ -90,6 +90,8 @@ int main(int argc, char *argv[]) {
     }
     int result = calculate_multiplications(multiplication_commands);
     std::cout << "The answer to part 1 is: " << result << std::endl;
+    // TODO: use regex to just delete everything from "don't().*do()
+    // Then call the same thing that I did in part 1
 
     return 0;
 }
