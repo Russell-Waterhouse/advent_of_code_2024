@@ -7,6 +7,3 @@ g++ -o main main.cpp -std=c++23 -Wextra -Wall -Weffc++ -Werror -pedantic -pedant
 ./main sample.txt
 
 
-./main sample.txt
-
-
