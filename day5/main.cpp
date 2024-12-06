@@ -19,10 +19,13 @@ public:
     int x;
     for (unsigned long int i {0}; i < update_pages.size(); i++) {
       x = update_pages.at(i);
+      std::cout << "x is: " << x << std::endl;
       if (x == m_first && !index_of_first.has_value()) {
+        std::cout <<  "Hit case 1: " << x << std::endl;
         index_of_first = i;
       }
-      if (x == m_second && index_of_second.has_value()) {
+      if (x == m_second && !index_of_second.has_value()) {
+        std::cout <<  "Hit case 2: " << x << std::endl;
         index_of_second = i;
       }
     }
@@ -30,6 +33,10 @@ public:
           && index_of_second.has_value()
           && index_of_first.value() < index_of_second.value();
     bool has_no_values = !index_of_first.has_value() || !index_of_second.has_value();
+    std::cout << "Rule " << m_first << "|" << m_second << std::endl;
+    std::cout << "   has_valid_values: " << has_valid_values << std::endl;
+    std::cout << "   has_no_values: " << has_no_values << std::endl;
+
 
     return has_no_values || has_valid_values;
   }
