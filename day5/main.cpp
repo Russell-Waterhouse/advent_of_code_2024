@@ -4,6 +4,7 @@
 #include <optional>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 class Rule {
 public:
@@ -52,6 +53,28 @@ public:
     }
     size_t middle_index {m_pages.size() / 2};
     return m_pages.at(middle_index);
+  }
+
+  int makeValid() {
+    if (isValid() != 0) {
+      // update was already valid, return 0
+      return 0;
+    }
+    std::sort(m_pages.begin(), m_pages.end());
+
+    int valid_result {0};
+    unsigned long int num_permutations {0};
+    while(true) {
+      valid_result = isValid();
+      if (valid_result != 0) {
+        return valid_result;
+      }
+      num_permutations++;
+      if (num_permutations % 1000000 == 0) {
+        std::cout << "Permutations: " << num_permutations << std::endl;
+      }
+      std::next_permutation(m_pages.begin(), m_pages.end());
+    }
   }
 };
 
@@ -130,6 +153,19 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << "The answer to part 1 is: " << valid_middle_pages << std::endl;
+
+
+  int fixed_middle_pages {0};
+  size_t num_updates {updates.size()};
+  size_t i {0};
+  for (auto update: updates) {
+    int result = update.makeValid();
+    fixed_middle_pages += result;
+    std::cout << "Finished update " << i << " of " << num_updates << std::endl;
+    i++;
+  }
+
+  std::cout << "The answer to part 2 is: " << fixed_middle_pages << std::endl;
 
   return 0;
 }
