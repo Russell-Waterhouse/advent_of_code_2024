@@ -19,13 +19,10 @@ public:
     int x;
     for (unsigned long int i {0}; i < update_pages.size(); i++) {
       x = update_pages.at(i);
-      std::cout << "x is: " << x << std::endl;
       if (x == m_first && !index_of_first.has_value()) {
-        std::cout <<  "Hit case 1: " << x << std::endl;
         index_of_first = i;
       }
       if (x == m_second && !index_of_second.has_value()) {
-        std::cout <<  "Hit case 2: " << x << std::endl;
         index_of_second = i;
       }
     }
@@ -33,9 +30,6 @@ public:
           && index_of_second.has_value()
           && index_of_first.value() < index_of_second.value();
     bool has_no_values = !index_of_first.has_value() || !index_of_second.has_value();
-    std::cout << "Rule " << m_first << "|" << m_second << std::endl;
-    std::cout << "   has_valid_values: " << has_valid_values << std::endl;
-    std::cout << "   has_no_values: " << has_no_values << std::endl;
 
 
     return has_no_values || has_valid_values;
@@ -57,7 +51,6 @@ public:
       }
     }
     size_t middle_index {m_pages.size() / 2};
-    // std::cout << "About to look at m_rules
     return m_pages.at(middle_index);
   }
 };
@@ -72,7 +65,6 @@ std::vector<std::string> split(std::string input, std::string delimiter) {
       break;
     }
     std::string token = input.substr(0, pos);
-    // std::cout << "Token is " << token << std::endl;
     tokens.push_back(token);
     input.erase(0, pos + delimiter.size());
     i++;
@@ -100,10 +92,8 @@ int main(int argc, char *argv[]) {
     }
     if (parsing_rules) {
       rawInputRules.push_back(line);
-      // std::cout << "Pushed back rule: " << line << "\n";
     } else {
       rawInputUpdates.push_back(line);
-      // std::cout << "Pushed back update: " << line << "\n";
     }
   }
   inputFile.close();
@@ -135,9 +125,7 @@ int main(int argc, char *argv[]) {
 
   int valid_middle_pages {0};
   for (auto update: updates) {
-    // std::cout << "calling isValid in main" << std::endl;
     int result = update.isValid();
-    std::cout << "Adding valid result: " << result << "\n";
     valid_middle_pages += result;
   }
 
