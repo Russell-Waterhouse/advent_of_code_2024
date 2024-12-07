@@ -4,6 +4,13 @@
 #include <vector>
 #include <string>
 
+template <typename T>
+void print_vector(std::vector<T>& vec) {
+  for (auto& v : vec) {
+    std::cout << v << " ";
+  }
+}
+
 std::vector<std::string> split(std::string input, std::string delimiter) {
   std::vector<std::string> tokens {};
   size_t pos {0};
