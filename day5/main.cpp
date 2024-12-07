@@ -35,6 +35,32 @@ public:
 
     return has_no_values || has_valid_values;
   }
+
+  bool make_valid(std::vector<int>& update_pages) {
+    std::optional<unsigned long int> index_of_first {};
+    std::optional<unsigned long int> index_of_second {};
+    int x;
+    for (unsigned long int i {0}; i < update_pages.size(); i++) {
+      x = update_pages.at(i);
+      if (x == m_first && !index_of_first.has_value()) {
+        index_of_first = i;
+      }
+      if (x == m_second && !index_of_second.has_value()) {
+        index_of_second = i;
+      }
+    }
+    bool has_no_values = !index_of_first.has_value() || !index_of_second.has_value();
+
+
+    if (!has_no_values && index_of_first.value() > index_of_second.value()) {
+      int tmp = update_pages.at(index_of_first.value());
+      update_pages.at(index_of_first.value()) = update_pages.at(index_of_second.value());
+      update_pages.at(index_of_second.value()) = tmp;
+      return false;
+    }
+
+    return true;
+  }
 };
 
 class Update {
@@ -60,21 +86,18 @@ public:
       // update was already valid, return 0
       return 0;
     }
-    std::sort(m_pages.begin(), m_pages.end());
-
     int valid_result {0};
     unsigned long int num_permutations {0};
-    while(true) {
-      valid_result = isValid();
-      if (valid_result != 0) {
-        return valid_result;
+
+    bool succeeded_last_update = false;
+    while(!succeeded_last_update) {
+      succeeded_last_update = true;
+      for (auto rule: m_rules) {
+        succeeded_last_update = succeeded_last_update && rule.make_valid(m_pages);
       }
-      num_permutations++;
-      if (num_permutations % 1000000 == 0) {
-        std::cout << "Permutations: " << num_permutations << std::endl;
-      }
-      std::next_permutation(m_pages.begin(), m_pages.end());
     }
+    size_t middle_index {m_pages.size() / 2};
+    return m_pages.at(middle_index);
   }
 };
 
@@ -161,7 +184,6 @@ int main(int argc, char *argv[]) {
   for (auto update: updates) {
     int result = update.makeValid();
     fixed_middle_pages += result;
-    std::cout << "Finished update " << i << " of " << num_updates << std::endl;
     i++;
   }
 
