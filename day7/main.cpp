@@ -38,28 +38,39 @@ std::vector<std::string> split(std::string input, std::string delimiter) {
 
 class Equation{
   public:
-    std::vector<int> right;
-    int left;
+    std::vector<long int> right;
+    long int left;
     std::string line;
 
     Equation(std::string inputLine): right {}, left {}, line {inputLine}{
       std::vector<std::string> tokens = split(inputLine, " ");
-      // std::cout << "In the constructor" << std::endl;
       tokens.at(0).erase(tokens.at(0).size()); // remove the colon
-      // std::cout << "In the constructor further" << std::endl;
-      left = std::stoi(tokens.at(0));
+      left = std::stol(tokens.at(0));
       for(size_t i {1}; i < tokens.size(); i++) {
-        right.push_back(std::stoi(tokens.at(i)));
+        right.push_back(std::stol(tokens.at(i)));
       }
     }
 
-    int validEquationSum() {
-      size_t exp = right.size() - 2;
+    long int validEquationSum() {
+      size_t exp = right.size() - 1;
       double num_choices = std::pow(2, exp);
       for (int i {0}; i < num_choices; i++) {
-        int test_right {0};
-        for (size_t j {0}; j < right.size(); j++) {
+        long int test_right {right.at(0)};
+        for (size_t j {0}; j < right.size() - 1; j++) {
           int jj = int(j);
+          // use the bits of i to decide whether to multiply or divide
+          // std::cout << line << "; " << ((i >> jj) & 0b01) << std::endl;
+          if (((i >> jj) & 0b01)) {
+            // multiply
+            test_right = test_right * right.at(j + 1);
+          } else {
+            // add
+            test_right = test_right + right.at(j + 1);
+          }
+        }
+        if (test_right == left) {
+          // std::cout << line << "; " << i << std::endl;
+          return left;
         }
       }
       return 0;
@@ -90,7 +101,7 @@ int main(int argc, char *argv[]) {
     equations.push_back(e);
   }
 
-  int validEquationSum {0};
+  long int validEquationSum {0};
   for (auto equation: equations) {
     validEquationSum += equation.validEquationSum();
   }
