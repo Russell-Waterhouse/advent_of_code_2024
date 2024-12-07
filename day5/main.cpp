@@ -1,17 +1,29 @@
 #include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <fstream>
 #include <optional>
 #include <vector>
 #include <string>
-#include <algorithm>
+
+template <typename T>
+void print_vector(std::vector<T>& vec) {
+  for (auto& v : vec) {
+    std::cout << v << " ";
+  }
+}
 
 class Rule {
 public:
   int m_first;
   int m_second;
   Rule(int first, int second): m_first {first}, m_second {second} {
-
+    if (first > 100 || second > 100 || first < 0 || second < 0) {
+      throw new std::exception;
+    }
+    if (m_first > 100 || m_second > 100 || m_first < 0 || m_second < 0) {
+      throw new std::exception;
+    }
   }
 
   bool is_valid(std::vector<int>& update_pages) {
@@ -32,6 +44,9 @@ public:
           && index_of_first.value() < index_of_second.value();
     bool has_no_values = !index_of_first.has_value() || !index_of_second.has_value();
 
+    if (m_first > 100 || m_second > 100 || m_first < 0 || m_second < 0) {
+      throw new std::exception;
+    }
 
     return has_no_values || has_valid_values;
   }
@@ -58,7 +73,15 @@ public:
       update_pages.at(index_of_second.value()) = tmp;
       return false;
     }
-
+    if (has_no_values) {
+      // if (m_first > 100 || m_second > 100 || m_first < 0 || m_second < 0) {
+      //   throw new std::exception;
+      // }
+      print_vector(update_pages);
+      std::cout << " valid because no values (" << m_first << "|" << m_second << ")\n";
+    } else {
+      // std::cout << "Valid because " << index_of_first.value() << " < " << index_of_second.value() << "\n";
+    }
     return true;
   }
 };
@@ -67,7 +90,7 @@ class Update {
 public:
   std::vector<Rule>& m_rules;
   std::vector<int> m_pages;
-  Update(std::vector<Rule> rules, std::vector<int> pages): m_rules {rules}, m_pages {pages} {
+  Update(std::vector<Rule>& rules, std::vector<int>& pages): m_rules {rules}, m_pages {pages} {
 
   }
 
@@ -92,8 +115,12 @@ public:
     bool succeeded_last_update = false;
     while(!succeeded_last_update) {
       succeeded_last_update = true;
+      bool rule_valid {};
       for (auto rule: m_rules) {
-        succeeded_last_update = succeeded_last_update && rule.make_valid(m_pages);
+        rule_valid = rule.make_valid(m_pages);
+        // std::cout << "Rule valid?: " << rule_valid << "\n";
+        succeeded_last_update = succeeded_last_update && rule_valid;
+        // std::cout << "Succeeded?: " << succeeded_last_update << "\n";
       }
     }
     size_t middle_index {m_pages.size() / 2};
@@ -179,12 +206,10 @@ int main(int argc, char *argv[]) {
 
 
   int fixed_middle_pages {0};
-  size_t num_updates {updates.size()};
   size_t i {0};
   for (auto update: updates) {
     int result = update.makeValid();
     fixed_middle_pages += result;
-    i++;
   }
 
   std::cout << "The answer to part 2 is: " << fixed_middle_pages << std::endl;
