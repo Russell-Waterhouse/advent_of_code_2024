@@ -95,13 +95,12 @@ std::optional <std::vector<Operator>> nextIteration(std::vector<Operator> operat
     std::optional<Operator> next_op = nextOperator(operators.at(i));
     if (next_op.has_value()) {
       operators.at(i) = next_op.value();
-      if ( i < operators.size() - 2) {
+      if ( i < operators.size() - 1) {
         // go back through and reset all less significant bits to zero
         for (size_t j {i + 1}; j < operators.size(); j++) {
           operators.at(j) = Operator::kAdd;
         }
       }
-
       return operators;
     }
   }
@@ -149,7 +148,6 @@ class Equation{
 
     long int calculateEquation(std::vector<Operator>& operators) {
       if (operators.size() == 0) {
-        // throw new std::exception;
       }
       long int calculation {right.at(0)};
       for(size_t i {1}; i < right.size(); i++) {
@@ -163,7 +161,7 @@ class Equation{
           case Operator::kConcat:
             std::string s {std::to_string(calculation)};
             s.append(std::to_string(right.at(i)));
-            calculation = std::stoi(s);
+            calculation = std::stol(s);
             break;
         }
       }
@@ -180,9 +178,6 @@ class Equation{
         operators.value().push_back(Operator::kAdd);
       }
       size_t i {0};
-      // if (!operators.has_value()) {
-        // throw new std::exception;
-      // }
       if (operators.value().size() < 1) {
         throw new std::exception;
       }
@@ -190,7 +185,7 @@ class Equation{
         i++;
         long int result = calculateEquation(operators.value());
         if (result != 0) {
-          std::cout << "The result is " << result << " For Array: ";
+          // std::cout << "The result is " << result << " For Array: ";
           print_vector(right);
           print_vector(operators.value());
           return result;
