@@ -24,15 +24,12 @@ std::vector<std::string> split(std::string input, std::string delimiter) {
       break;
     }
     std::string token = input.substr(0, pos);
-    // std::cout << "Token is " << token << std::endl;
     tokens.push_back(token);
     input.erase(0, pos + delimiter.size());
     i++;
     // print_vector(tokens);
   } while (i < 100);
-  // // std::cout << "Made it out of the loop" << std::endl;
   tokens.push_back(input);
-  // std::cout << "Returning" << std::endl;
   // print_vector(tokens);
   return tokens;
 }
@@ -43,6 +40,22 @@ enum class Operator {
   kConcat
 };
 
+void print_vector(std::vector<Operator>& ops) {
+  for(auto& op: ops) {
+    switch(op) {
+      case Operator::kAdd:
+        std::cout << " + ";
+        break;
+      case Operator::kMultiply:
+        std::cout << " * ";
+        break;
+      case Operator::kConcat:
+        std::cout << " || ";
+        break;
+    }
+  }
+  std::cout << std::endl;
+}
 
 std::optional<Operator> nextOperator(Operator& op) {
   switch(op) {
@@ -78,7 +91,7 @@ std::optional<Operator> nextOperator(Operator& op) {
 // 2 0 0
 
 std::optional <std::vector<Operator>> nextIteration(std::vector<Operator> operators) {
-  for (size_t i {operators.size()}; i <= 100; i--) {
+  for (size_t i {operators.size() - 1}; i <= 100; i--) {
     std::optional<Operator> next_op = nextOperator(operators.at(i));
     if (next_op.has_value()) {
       operators.at(i) = next_op.value();
@@ -119,7 +132,6 @@ class Equation{
         for (size_t j {0}; j < right.size() - 1; j++) {
           int jj = int(j);
           // use the bits of i to decide whether to multiply or divide
-          // std::cout << line << "; " << ((i >> jj) & 0b01) << std::endl;
           if (((i >> jj) & 0b01)) {
             // multiply
             test_right = test_right * right.at(j + 1);
@@ -129,7 +141,6 @@ class Equation{
           }
         }
         if (test_right == left) {
-          // std::cout << line << "; " << i << std::endl;
           return left;
         }
       }
@@ -138,7 +149,6 @@ class Equation{
 
     long int calculateEquation(std::vector<Operator>& operators) {
       if (operators.size() == 0) {
-        std::cout << "Operators size is 0 :(" << std::endl;
         // throw new std::exception;
       }
       long int calculation {right.at(0)};
@@ -171,7 +181,6 @@ class Equation{
       }
       size_t i {0};
       // if (!operators.has_value()) {
-        // std::cout << "Operators has no value :(" << std::endl;
         // throw new std::exception;
       // }
       if (operators.value().size() < 1) {
@@ -179,9 +188,11 @@ class Equation{
       }
       do {
         i++;
-        std::cout << "Iteration " << i << std::endl;
         long int result = calculateEquation(operators.value());
         if (result != 0) {
+          std::cout << "The result is " << result << " For Array: ";
+          print_vector(right);
+          print_vector(operators.value());
           return result;
         }
         operators = nextIteration(operators.value());
@@ -210,7 +221,6 @@ int main(int argc, char *argv[]) {
   std::vector<Equation> equations {};
   for (auto line: rawInput) {
     Equation e {line};
-    // std::cout << "Got returned" << std::endl;
     equations.push_back(e);
   }
 
