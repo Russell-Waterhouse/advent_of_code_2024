@@ -4,34 +4,51 @@
 #include <cmath>
 #include "aoc_helper.hpp"
 
+
+template <typename T>
+void print_vector(std::vector<T>& vec) {
+  for (auto& v : vec) {
+    std::cout << v << " \n";
+  }
+  std::cout << std::endl;
+}
+
 void add_antinode_to_map(size_t i, size_t j, std::vector<std::string>& antinode_map) {
   if (i < antinode_map.size() && j < antinode_map.at(0).size()) {
+    std::cout << "Adding node at point " << i << ", " << j << std::endl;
     antinode_map.at(i).at(j) = '1';
   }
 }
 
 
 void add_antinodes_for_points_pt2(size_t x1, size_t y1, size_t x2, size_t y2, std::vector<std::string>& antinode_map) {
-  size_t bigger_x {x1 > x2 ? x1: x1};
+  size_t bigger_x {x1 > x2 ? x1: x2};
   size_t smaller_x {x1 < x2 ? x1 : x2};
   size_t bigger_y {y1 > y2 ? y1 : y2 };
   size_t smaller_y {y1 < y2 ? y1 : y2 };
   size_t delta_x {bigger_x - smaller_x};
   size_t delta_y {bigger_y - smaller_y};
-  for (size_t i {0}; i < antinode_map.size(); i++) {
-    size_t bigger_antinode_x = bigger_x + (delta_x * i);
-    size_t bigger_antinode_y = bigger_y + (delta_y * i);
+  add_antinode_to_map(x1, y1, antinode_map);
+  add_antinode_to_map(x2, y2, antinode_map);
+  for (size_t i {1}; i < antinode_map.size(); i++) {
+    size_t harmonic_delta_x {delta_x * i};
+    size_t harmonic_delta_y {delta_y * i};
+    size_t bigger_antinode_x = bigger_x + harmonic_delta_x;
+    size_t bigger_antinode_y = bigger_y + harmonic_delta_y;
     if (x1 < x2 && y1 < y2) {
       add_antinode_to_map(bigger_antinode_x, bigger_antinode_y, antinode_map);
-      if (smaller_y >= (delta_y) && smaller_x >= delta_x) {
-        add_antinode_to_map(smaller_x - (delta_x * i), smaller_y - (delta_y * i), antinode_map);
+      if (smaller_y >= harmonic_delta_y && smaller_x >= harmonic_delta_x) {
+        add_antinode_to_map(smaller_x - harmonic_delta_x, smaller_y - harmonic_delta_y, antinode_map);
       }
     } else {
-      if (smaller_y >= (delta_y * i)) {
-        add_antinode_to_map(bigger_antinode_x, smaller_y - (delta_y * i), antinode_map);
+      // std::cout << "i is: " << i << std::endl;
+      if (smaller_y >= harmonic_delta_y) {
+      std::cout << "2 i is: " << i << std::endl;
+        add_antinode_to_map(bigger_antinode_x, smaller_y - harmonic_delta_y, antinode_map);
       }
-      if (smaller_x >= (delta_x * i)) {
-        add_antinode_to_map(smaller_x - (delta_x * i), bigger_antinode_y, antinode_map);
+      if (smaller_x >= harmonic_delta_x) {
+      std::cout << "1 i is: " << i << "; Harmonic_x: " << harmonic_delta_x << "; delta x " << delta_x << "; bigger x: " << bigger_x << "; smaller_x: " << smaller_x << std::endl;
+        add_antinode_to_map(smaller_x - harmonic_delta_x, bigger_antinode_y, antinode_map);
       }
     }
   }
@@ -143,6 +160,7 @@ int num_antinodes_pt2(std::vector<std::string>& tower_map) {
       }
     }
   }
+  print_vector(antinode_map);
   return node_cnt;
 }
 
