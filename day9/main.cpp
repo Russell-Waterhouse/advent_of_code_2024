@@ -83,9 +83,15 @@ std::unique_ptr<std::vector<std::optional<unsigned int>>> sort_expanded_drive2(s
       // at this point, front_l is the start of an empty space, 
       // front_r is the right side of that space window big
       // enough to fit the file.
+      for (size_t file_move_idx; file_move_idx < filesize; file_move_idx++) {
+        expanded->at(front_l + file_move_idx) = expanded->at(back_r);
+        expanded->at(back_r) = {};
+        back_r--;
+      }
+      break;
     }
-      back_l--;
-      back_r = back_l;
+    back_l--;
+    back_r = back_l;
   }
   return print_expanded(std::move(expanded));
 }
