@@ -58,6 +58,7 @@ std::unique_ptr<std::vector<std::optional<unsigned int>>> sort_expanded_drive2(s
     }
     size_t filesize = back_r - back_l + 1;
     //back_l now points to the start of the file, back_r now points to the end of the file.
+    std::cout << "back_l: " << back_l << " back_r: " << back_r << " filesize: " << filesize << std::endl;
 
     front_l = 0;
     front_r = 0;
@@ -83,7 +84,9 @@ std::unique_ptr<std::vector<std::optional<unsigned int>>> sort_expanded_drive2(s
       // at this point, front_l is the start of an empty space, 
       // front_r is the right side of that space window big
       // enough to fit the file.
-      for (size_t file_move_idx; file_move_idx < filesize; file_move_idx++) {
+      std::cout << "front_l: " << front_l << " front_r: " << front_r << std::endl;
+      for (size_t file_move_idx {0}; file_move_idx < filesize; file_move_idx++) {
+        std::cout << "Moving file from " << front_l + file_move_idx << " to " << back_r << std::endl;
         expanded->at(front_l + file_move_idx) = expanded->at(back_r);
         expanded->at(back_r) = {};
         back_r--;
