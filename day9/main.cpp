@@ -41,20 +41,51 @@ unsigned long int calculate_checksum(std::unique_ptr<std::vector<std::optional<u
 }
 
 std::unique_ptr<std::vector<std::optional<unsigned int>>> sort_expanded_drive2(std::unique_ptr<std::vector<std::optional<unsigned int>>> expanded) {
-  size_t back_idx {expanded->size() - 1};
-  size_t front_idx {0};
-  while (back_idx > front_idx ) {
-    if (!expanded->at(back_idx).has_value()) {
-      back_idx--;
+  size_t back_l {expanded->size() - 1};
+  size_t back_r {expanded->size() - 1};
+  size_t front_l {0};
+  size_t front_r {0};
+  while (back_l > 0) {
+    if (!expanded->at(back_r).has_value()) {
+      // no file at the back to move
+      back_l--;
+      back_r--;
       continue;
     }
-    if (expanded->at(front_idx).has_value()) {
-      front_idx++;
-      continue;
+    unsigned int file_id = expanded->at(back_r).value();
+    while (expanded->at(back_l - 1).has_value() && expanded->at(back_l - 1).value() == file_id && back_l > 1) {
+      back_l--;
     }
-    expanded->at(front_idx) = expanded->at(back_idx);
-    expanded->at(back_idx) = {};
-    back_idx--;
+    size_t filesize = back_r - back_l + 1;
+    //back_l now points to the start of the file, back_r now points to the end of the file.
+
+    front_l = 0;
+    front_r = 0;
+    while(front_r < back_l){
+      if (expanded->at(front_l).has_value()) {
+        front_l++;
+        front_r++;
+        continue;
+      }
+      bool enough_size = true;
+      for (size_t iter {0}; iter < filesize; iter++) {
+        if (expanded->at(front_r).has_value()) {
+          enough_size = false;
+          break;
+        }
+        front_r++;
+      }
+      if (!enough_size) {
+        front_l = front_r;
+        continue;
+      }
+
+      // at this point, front_l is the start of an empty space, 
+      // front_r is the right side of that space window big
+      // enough to fit the file.
+    }
+      back_l--;
+      back_r = back_l;
   }
   return print_expanded(std::move(expanded));
 }
