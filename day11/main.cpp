@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
         stones.push_back(stone);
       }
     }
+    std::cout << "Finished iteration " << i << std::endl;
   }
 
   size_t part_1 {stones.size()};
