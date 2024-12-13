@@ -18,6 +18,7 @@ std::vector<std::string> split(std::string input, std::string delimiter) {
     input.erase(0, pos + delimiter.size());
     i++;
   } while (i < 100);
+  std::cout << "Token is " << input << std::endl;
   tokens.push_back(input);
   return tokens;
 }
