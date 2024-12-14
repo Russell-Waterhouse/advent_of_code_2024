@@ -90,35 +90,41 @@ class Region {
     unsigned int perimeter;
     unsigned int area;
     unsigned int cost;
+    unsigned int num_sides;
+    unsigned int bulk_cost;
     Region(size_t x, size_t y, std::vector<std::string>& map):
       letter {map.at(x).at(y)},
       plots {},
       perimeter {0},
       area {0},
-      cost {0} {
-        std::queue<Plot> leaves {};
-        Plot beginning = Plot(x, y, map);
-        leaves.push(beginning);
-        plots.insert(beginning);
-        do {
-          Plot leaf = leaves.front();
-          for (Plot& new_leaf: leaf.adjacent_valid_leaves(map, plots)) {
-            leaves.push(new_leaf);
-            plots.insert(new_leaf);
-          }
-          leaves.pop();
-        } while (leaves.size() > 0);
-        for (const Plot& p: plots) {
-          area ++;
-          perimeter += p.perimeter;
-          map.at(p.mx).at(p.my) = '0'; // Mark this plot as handled
+      cost {0},
+      num_sides {0},
+      bulk_cost {0}
+    {
+      std::queue<Plot> leaves {};
+      Plot beginning = Plot(x, y, map);
+      leaves.push(beginning);
+      plots.insert(beginning);
+      do {
+        Plot leaf = leaves.front();
+        for (Plot& new_leaf: leaf.adjacent_valid_leaves(map, plots)) {
+          leaves.push(new_leaf);
+          plots.insert(new_leaf);
         }
-        cost = perimeter * area;
+        leaves.pop();
+      } while (leaves.size() > 0);
+      for (const Plot& p: plots) {
+        area ++;
+        perimeter += p.perimeter;
+        map.at(p.mx).at(p.my) = '0'; // Mark this plot as handled
+      }
+      cost = perimeter * area;
     };
 
     void print() {
       std::cout << "Region: " << letter << "; Area: " << area << "; Perimeter: " << perimeter;
-      std::cout << "; Cost: " << cost << std::endl;
+      std::cout << "; num_sides " << num_sides;
+      std::cout << "; Cost: " << cost << "; bulk cost: " << bulk_cost << std::endl;
     }
 };
 
@@ -138,13 +144,14 @@ int main(int argc, char *argv[]) {
   }
 
   unsigned int part_1 {0};
+  unsigned int part_2 {0};
   for (Region& region: regions) {
     part_1 += region.cost;
+    part_2 += region.bulk_cost;
     region.print();
   }
   std::cout << "The answer to part 1 is: " << part_1 << std::endl;
   
-  int part_2 {0};
   std::cout << "The answer to part 2 is: " << part_2 << std::endl;
   return 0;
 }
