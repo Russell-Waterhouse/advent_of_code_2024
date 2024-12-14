@@ -5,6 +5,7 @@
 #include <vector>
 #include <cmath>
 #include "aoc_helper.hpp"
+#include <optional>
 
 
 template <typename T>
@@ -21,20 +22,37 @@ class Plot {
     unsigned int perimeter;
     size_t mx;
     size_t my;
+    bool left_edge;
+    bool right_edge;
+    bool top_edge;
+    bool bottom_edge;
+    Plot(size_t x, size_t y): mx {x}, my {y} {};
     Plot(size_t x, size_t y, std::vector<std::string>& map):
-      letter {map.at(x).at(y)}, perimeter {0}, mx {x}, my {y} {
+      letter {map.at(x).at(y)},
+      perimeter {0},
+      mx {x},
+      my {y},
+      left_edge {false},
+      right_edge {false},
+      top_edge {false},
+      bottom_edge {false}
+    {
       std::vector<int> idxs {-1, 1};
       if (x == 0 || map.at(x-1).at(y) != letter) {
         perimeter++;
+        top_edge = true;
       }
       if (y == 0 || map.at(x).at(y-1) != letter) {
         perimeter++;
+        left_edge = true;
       }
       if (x == map.size() -1 || map.at(x+1).at(y) != letter) {
         perimeter++;
+        bottom_edge = true;
       }
       if (y == map.size() - 1 || map.at(x).at(y + 1) != letter) {
         perimeter++;
+        right_edge = true;
       }
     };
 
@@ -66,6 +84,10 @@ class Plot {
       }
 
       return v;
+    }
+
+    void print() {
+      std::cout << "Plot: " << letter << "; (" << mx << ","<<my<<")" << std::endl;
     }
 };
 
@@ -113,12 +135,63 @@ class Region {
         }
         leaves.pop();
       } while (leaves.size() > 0);
-      for (const Plot& p: plots) {
-        area ++;
+      for (size_t i {0}; i < map.size(); i++) {
+        bool prev_was_top_edge = false;
+        bool prev_was_bottom_edge = false;
+        bool prev_was_left_edge = false;
+        bool prev_was_right_edge = false;
+        for (size_t j {0}; j < map.at(0).size(); j++) {
+          // if (letter == 'C') { std::cout << << std::endl; }
+          // scanning left to right
+          Plot p = Plot(i, j, map);
+          if (plots.contains(p)) {
+            if (p.top_edge && !prev_was_top_edge) {
+              num_sides++;
+            }
+            if (p.bottom_edge && !prev_was_bottom_edge) {
+              num_sides++;
+            }
+            prev_was_bottom_edge = p.bottom_edge;
+            prev_was_top_edge = p.top_edge;
+          } else {
+            prev_was_top_edge = false;
+            prev_was_bottom_edge = false;
+            if (letter == 'C') {
+              // p.print();
+            }
+          }
+
+          // flip i and j to scan top to bottom (input is square thank god)
+          p = Plot(j, i, map);
+          if (plots.contains(p)) {
+            // if (letter == 'C') { std::cout << "Contains: " << j << "; " << i << std::endl; }
+            if (p.left_edge && !prev_was_left_edge) {
+              num_sides++;
+            }
+            if (p.right_edge && !prev_was_right_edge) {
+              num_sides++;
+            }
+            prev_was_left_edge = p.left_edge;
+            prev_was_right_edge = p.right_edge;
+          } else {
+            prev_was_left_edge = false;
+            prev_was_right_edge = false;
+            if (letter == 'C') {
+              // p.print();
+            }
+          }
+        }
+      }
+      for (Plot p: plots) {
+        area++;
         perimeter += p.perimeter;
         map.at(p.mx).at(p.my) = '0'; // Mark this plot as handled
+        if (letter == 'C') {
+          // p.print();
+        }
       }
       cost = perimeter * area;
+      bulk_cost = area * num_sides;
     };
 
     void print() {
